@@ -1,0 +1,89 @@
+\documentclass[11pt,fleqn]{article}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[hidelinks]{hyperref}
+\setlength{\mathindent}{0pt}
+
+\newcommand{\X}{\mathcal X}
+\newcommand{\C}{\mathcal C}
+\newcommand{\Hy}{\mathcal H}
+\newcommand{\err}{\operatorname{error}}
+\newcommand{\eps}{\epsilon}
+
+\begin{document}
+\raggedright
+\setlength{\parskip}{0.6em}
+
+{\LARGE\bfseries Page 2: Foundations of PAC Learning\par}
+\medskip
+
+\section{Terminology}
+
+We now need to go through some definitions.\par
+
+Let $\X$ be the \textbf{instance space}, which consists of all possible inputs. Throughout this website, we will consider $\X = \{0, 1\}^n$ for some $n$. (In our example from the previous page $n$ was 2.)\par
+
+Let $D$ be the \textbf{input distribution}. This is some probability distribution over all inputs.\par
+
+Let $f$ be the true target function.\par
+
+Let $\C$ be the \textbf{concept class}. This is the set of all potential \textbf{target functions}.\par
+
+Let $\Hy$ be the \textbf{hypothesis class}. This is the set of all functions the learner can return.\par
+
+Note that we are allowed to have $\C = \Hy$, which we will do for our simplest examples.\par
+
+\section{What the Learner Sees}
+
+The learner will receive a training sample which consists of $m$ examples, in the form
+\[S = ((x_1, f(x_1)), (x_2, f(x_2)), ..., (x_m, f(x_m))) \]
+
+Each example is independent and identically distributed (i.i.d.), with each input drawn from $D$. Thus, repeats are possible.
+
+\section{Defining Error of a Prediction Rule}
+
+Once our learner produces a hypothesis $h$, we will define the \textbf{generalization error} as
+\[\boxed{\err_D(h, f) = \Pr_{x\sim D}[h(x) \neq f(x)]}\]
+
+This is the probability of an error on a new fresh draw from $D$. For example, let's say the two rules from our original example on Page 1 disagree on inputs that have $0.10$ probability mass in $D$. Then, let's say one of the hypotheses ($h_1$) was the target function and the other ($h_2$) was not. Then the $\err_D(h_1, f) = 0$ and $\err_D(h_2, f) = 0.10$.
+
+\section{The PAC Guarantee}
+
+PAC stands for \textit{Probably Approximately Correct} (a somewhat funny name in my opinion). There are two parameters, the accuracy parameter $\eps$ and the failure parameter $\delta$.\par
+
+$\eps$ tells us the largest generalization error we are willing to accept. $\delta$ tells us how often we are allowed to fail to meet our desired generalization error. Let us say that $A(S, r)$ is the hypothesis that is produced from the learning on sample $S$ using random bits $r$. Then, the PAC guarantee states that
+\[\boxed{\Pr_{S, r} [\err_D(A(S, r), f) \leq \eps] \geq 1 - \delta}\]
+
+Note that there are two probabilities here, so take some time to digest what this means. The inner error states that for some fixed hypothesis, our generalization error cannot be too high. The outer probability states we meet our error bound at a high enough rate if we repeatedly get samples from $D$ and re-run our randomized algorithm to pick a hypothesis. For example, with $\eps = 0.10$ and $\delta = 0.05$, this means that with a $95\%$ probability, we will pick a hypothesis that's true generalization error is at most $10\%$.
+
+In a \textbf{distribution-free} model, a single learner must give this guarantee for any probability distribution over the inputs and for every allowed target, given sufficiently many examples for the requested $\eps$ and $\delta$~\cite{kv}.
+
+\section{Realizable, Agnostic, Proper, Improper}
+
+In the \textbf{realizable} setting, there exists a rule in the reference class that has zero true or generalization error under $D$. One way that ensure this is to have $f \in \Hy$.\par
+
+In the \textbf{agnostic} learning, we will allow an arbitrary distribution $P$ over the input-label pairs $(x, y)$. This means that the same input could have different labels with different probabilities. Thus, every rule in the reference class may make mistakes. If we let $L_P(h) = \Pr_{(x,y) \sim P}[h(x) \neq y]$, then our goal is to minimize $L_P(h)$. The PAC guarantee then becomes
+\[\boxed{L_P(h) \leq \inf_{g \in \Hy} L_P(g) + \eps, \text{ with probability at least } 1-\delta}\]
+Note that for a finite class, the infimum is the same as the minimum~\cite{ssbd}. For example, if the best rule has $7\%$ error and $\eps = 0.03$, then the error target will become $10\%$.\par
+
+\textbf{Proper} learning requires that the output hypothesis be in the target class, or in the reference class in an agnostic setting.\par
+
+\textbf{Improper} learning allows the learner to have a broader output range. Proper vs. improper is an orthogonal axis from realizable or not.
+
+\section{Sample Complexity and Running Time}
+
+\textbf{Sample Complexity} is the number of examples that are required to reach the PAC guarantee. We will define \textbf{Computational Efficiency} as whether our training can be run in polynomial time with respect to the relevant parameters, such as $n$ (input length), $m$ (number of examples), $\frac{1}{\eps}$, $\frac{1}{\delta}$. For the rest of this website, we will also say that our outputted hypotheses must be efficiently evaluable.
+
+\begin{thebibliography}{9}
+\bibitem{kv}
+Michael J. Kearns and Umesh V. Vazirani.
+\emph{An Introduction to Computational Learning Theory}.
+MIT Press, 1994. Chapter 1.
+
+\bibitem{ssbd}
+Shai Shalev-Shwartz and Shai Ben-David.
+\emph{Understanding Machine Learning: From Theory to Algorithms}.
+Cambridge University Press, 2014. Chapters 2--3.
+\end{thebibliography}
+
+\end{document}

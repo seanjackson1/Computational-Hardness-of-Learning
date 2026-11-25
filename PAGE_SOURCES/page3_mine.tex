@@ -1,0 +1,83 @@
+\documentclass[11pt,fleqn]{article}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[hidelinks]{hyperref}
+\setlength{\mathindent}{0pt}
+
+\newcommand{\X}{\mathcal X}
+\newcommand{\C}{\mathcal C}
+\newcommand{\Hy}{\mathcal H}
+\newcommand{\err}{\operatorname{error}}
+\newcommand{\eps}{\epsilon}
+
+\begin{document}
+\raggedright
+\setlength{\parskip}{0.6em}
+
+{\LARGE\bfseries Page 3: Sample Complexity vs. Computational Complexity\par}
+\medskip
+
+\section{What Does it Mean to ``Fit a Sample''}
+
+We will say that a hypothesis is \textbf{consistent} if it matches the labels of all the examples in the training sample. We will say that a hypothesis's \textbf{empirical risk} is the fraction of training examples that it incorrectly classifies. The strategy of \textbf{Empirical Risk Minimization} (ERM) is the one in which a learner returns the $h \in \Hy$ that has the smallest empirical risk. When the setting is \textit{realizable}, this means that the smallest possible empirical risk is zero.
+
+\section{The Finite-Class Bound}
+
+This is a very important bound in PAC, and its proof is not super complicated.\par
+
+Let $\Hy$ be some fixed, finite hypothesis class. Let $f$ be the target function, and let $D$ be the input distribution. We will draw $m$ independent samples from $D$ to act as our training sample $S$, and we will label them using $f$. If $\boxed{m \geq \left\lceil \frac{\ln |\Hy| + \ln(1/\delta)}{\epsilon} \right\rceil}$, then with probability at least $1 - \delta$ over $S$, every consistent hypothesis in $\Hy$ has a true generalization error at most $\eps$.
+
+In the realizable setting, this means that a strategy of ERM can use this sample size to meet the PAC guarantee~\cite{kv,ssbd}.
+
+Let's now go through the proof.
+
+\subsection*{Lemma: $1 + x \leq e^x$}
+
+This is a standard mathematical fact that will be important for later. Note that using Taylor's theorem with the Lagrange remainder $e^x = 1 + x + \frac{e^c}{2}x^2$ for some $c$ between $0$ and $x$. Thus, $1 + x = e^x - \frac{e^c}{2}x^2$, and since $\frac{e^c}{2}x^2 \geq 0$, this means that $1 + x \leq e^x$. Note that this is a fairly good approximation when $x$ is close to 0.
+
+\subsection*{Step 1: Bad Rules}
+
+For the first step in our proof, let us define a \textit{bad} rule as an $h$ where $\err_D(h, f) > \epsilon$, where $0 < \eps \leq 1$. Note that whether or not $h$ is bad is determined by $D$ and $f$. The randomness comes from whether or not the sample we draw will expose the mistake.
+
+\subsection*{Step 2: Look at One Particular Bad Rule}
+
+Let us say a fixed bad rule $h$ has an a true error $p > \epsilon$. Then, a single draw will miss its mistakes with probability $1 - p$. Thus, over $m$ i.i.d. draws, the probability that our bad rule never sees a mistake (so the probability that $h$ is consistent with $S$) is
+\[(1 - p)^m \leq (1 - \eps)^m \leq e^{-\eps m}\]
+
+\subsection*{Step 3: Account for All the Rules}
+
+Note that there could be at most $|\Hy|$ bad hypotheses. Thus, using the union bound, we can say that
+\[\boxed{\Pr_S [\text{at least one bad hypothesis is consistent with } S] \leq |\Hy|e^{-\eps m}}\]
+
+\subsection*{Step 4: Solve for the Sample Size}
+
+Now, note that we want $|\Hy|e^{-\eps m} \leq \delta$, where $0 < \delta \leq 1$. Thus,
+\begin{align*}
+    |\Hy|e^{-\eps m} \leq \delta &\iff e^{-\eps m} \leq \frac{\delta}{|\Hy|}\\
+    &\iff -\eps m \leq \ln (\delta / |\Hy|)\\
+    &\iff -\eps m \leq \ln (\delta) - \ln(|\Hy|)\\
+    &\iff \eps m \geq \ln(|\Hy|) - \ln (\delta) \\
+    &\iff m \geq \frac{\ln(|\Hy|) - \ln (\delta)}{\eps}\\
+    &\iff m \geq \frac{\ln(|\Hy|) + \ln (1/\delta)}{\eps}
+\end{align*}
+Taking the ceiling so that we get a whole number, this leaves us with $\boxed{m \geq \left\lceil \frac{\ln |\Hy| + \ln(1/\delta)}{\epsilon} \right\rceil}$.
+
+
+\section{Sufficient Data and the Cost of Searching}
+
+Note that the general bound we just derived gives a sufficient number, but a specific problem may need fewer examples. For instance, for a hypothesis class of two rules with $\epsilon = \delta = 0.05$, the general bound gives $m \geq \lceil \ln (40) / 0.05\rceil = 74$ examples. However, let's say that exactly one of the rules is bad and makes mistakes on exactly 10\% of inputs. Then, the exact chance that is consistent on a sample is $0.9^m$, and we only need $m = 29$ to push this chance below $0.05$.
+
+Now suppose that $|\Hy| = 2^n$. Then, $\ln |\Hy| = n \ln 2$. Thus, the sample bound grows linearly with $n$ as long as we keep $\delta$ and $\eps$ fixed.
+\begin{thebibliography}{9}
+\bibitem{kv}
+Michael J. Kearns and Umesh V. Vazirani.
+\emph{An Introduction to Computational Learning Theory}.
+MIT Press, 1994. Chapter 2, ``Occam's Razor.''
+
+\bibitem{ssbd}
+Shai Shalev-Shwartz and Shai Ben-David.
+\emph{Understanding Machine Learning: From Theory to Algorithms}.
+Cambridge University Press, 2014. Section 2.3.1 and Corollary 2.3.
+\end{thebibliography}
+
+\end{document}

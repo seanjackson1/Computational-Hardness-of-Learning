@@ -1,11 +1,16 @@
-import { BlockMath, InlineMath } from 'react-katex'
+import katex from 'katex'
 
-const fallback = (error: Error) => <code className="math-error" title={error.message}>Formula unavailable</code>
+type MathProps = { children: string; macros?: Record<string, string> }
 
-export function MathInline({ children }: { children: string }) {
-  return <InlineMath math={children} renderError={fallback} />
+function renderMath(source: string, macros: MathProps['macros'], displayMode = false) {
+  return { __html: katex.renderToString(source, { macros: { ...macros }, displayMode, throwOnError: false, trust: false }) }
 }
 
-export function MathBlock({ children }: { children: string }) {
-  return <div className="math-scroll"><BlockMath math={children} renderError={fallback} /></div>
+export function MathInline({ children, macros }: MathProps) {
+  const wide = children.length > 52
+  return <span className={wide ? 'wide-inline-math' : 'inline-math'} tabIndex={wide ? 0 : undefined} dangerouslySetInnerHTML={renderMath(children, macros)} />
+}
+
+export function MathBlock({ children, macros }: MathProps) {
+  return <div className="math-scroll" tabIndex={children.length > 65 ? 0 : undefined} dangerouslySetInnerHTML={renderMath(children, macros, true)} />
 }

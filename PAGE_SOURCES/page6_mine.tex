@@ -1,0 +1,50 @@
+\documentclass[11pt,fleqn]{article}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[hidelinks]{hyperref}
+\setlength{\mathindent}{0pt}
+
+\newcommand{\X}{\mathcal X}
+\newcommand{\C}{\mathcal C}
+\newcommand{\Hy}{\mathcal H}
+\newcommand{\err}{\operatorname{error}}
+\newcommand{\eps}{\epsilon}
+\newcommand{\Adv}{\operatorname{Adv}}
+
+\begin{document}
+\raggedright
+\setlength{\parskip}{0.6em}
+
+{\LARGE\bfseries Page 6: Learning Parity and Interpreting the Demos\par}
+\medskip
+
+\section{Sample Bound Calculator}
+
+Play around with different values of the parameters.
+
+\section{Oracle Challenge}
+
+Try playing around with this. In the keyed branch, the browser will generate a secret HMAC key for the round and then compute HMAC-SHA-256 for each input, returning the first bit of result~\cite{mdn}.
+
+\section{A Family We CAN Learn Efficiently}
+
+A parity function is one that has a secret vector $s \in \{0, 1\}^n$~\cite{mit}. It labels an input $x$ by computing
+\[f_s(x) = \sum_{i=1}^n s_i x_i \pmod 2\]
+
+Notice how a single example $(x, y)$ gives an equation $x \cdot s = y$. If we have multiple examples, this yields a system of equations, representable in matrix form as $Xs = y$, where each row of $X$ is an input and each element of $y$ is its corresponding label. Note that this is a system over GF(2). Thus, once we get a matrix with rank $n$, we can recover the unique $s$ in polynomial time using Gaussian elimination.
+
+\begin{thebibliography}{9}
+\bibitem{mit}
+MIT 6.S976 / 18.S996.
+\emph{Cryptography and Machine Learning: Foundations and Frontiers}.
+\href{https://mlcrypto.mit.edu/course/}{Lectures 4--5}, Spring 2026.
+
+\bibitem{mdn}
+MDN Web Docs.
+\href{https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API}
+{Web Crypto API} and
+\href{https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/sign#hmac}
+{\texttt{SubtleCrypto.sign()}, HMAC}.
+\end{thebibliography}
+
+\end{document}

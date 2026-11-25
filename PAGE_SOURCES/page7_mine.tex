@@ -1,0 +1,81 @@
+\documentclass[11pt,fleqn]{article}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[hidelinks]{hyperref}
+\setlength{\mathindent}{0pt}
+
+\newcommand{\X}{\mathcal X}
+\newcommand{\C}{\mathcal C}
+\newcommand{\Hy}{\mathcal H}
+\newcommand{\err}{\operatorname{error}}
+\newcommand{\eps}{\epsilon}
+\newcommand{\Adv}{\operatorname{Adv}}
+
+\begin{document}
+\raggedright
+\setlength{\parskip}{0.6em}
+
+{\LARGE\bfseries Page 7: Implications and Further Reading\par}
+\medskip
+
+\section{What the Project Shows}
+
+A major question we asked was whether having enough examples means that we are able to learn efficiently. For an $n$-bit PRF family, the finite-class bound gives us a sufficient sample size linear in $n$ for fixed accuracy and confidence. If we know the key, we can also evaluate the target efficiently. However, under PRF security, no polynomial-time learner can reliably turn that number of examples into an accurate predictor.
+
+Even though this may at first seem off, these facts are compatible because they answer different questions. The sample bounds gives a number that tells us that any candidate predictor that is consistent with our examples is likely to be a good predictor. However, actually turning the examples into a predictor is difficult. We could try all $2^n$ keys and figure it out, but this is not efficient. We showed that there is no efficient algorithm to find this predictor, assuming PRF security holds.
+
+\section{What the Hardness Claim Depends On}
+
+The reduction we showed proves that the existence of an efficient learner would lead to the existence of an efficient distinguisher with non-negligible advantage. The conclusion is conditional on PRF security~\cite{mit}.
+
+The learning guarantee from the main theorem is also over a uniform input distribution. Note that a distribution-free model would have to work on the uniform input distribution. An algorithm that could succeed on a specific (i.e. easier) distribution is making a different guarantee.
+
+\section{Connection to Boolean Circuits}
+
+Note that the PRF has a polynomial-time evaluable algorithm that takes in $k$ and $x$ as inputs. Thus, using our efficient TM-to-Circuit theorem from class, we could construct a circuit for each evaluator $F_k$~\cite{circuits}. We could hardwire the key bits and then leave the $n$ input bits free.
+
+Thus, there is a polynomial size bound $p(n)$ large enough to contain a circuit for each member of the PRF family. A learner that could work for all functions represented by circuits of that size would then have to be able to learn PRFs. Thus, the same security assumption would give a learning-hardness consequence for a suitably size-bounded circuit class.
+
+\section{Restricted Classes and Related Work}
+
+For more restrictive target classes, we need new arguments that show that the hard functions are representable inside them. Kearns and Valiant give arguments for classes that include polynomial-size Boolean formulas, acyclic DFAs, and constant-depth threshold circuits. These reductions connect distribution-free learning for these classes to cryptographic and number-theoretic problems like RSA inversion~\cite{valiant}.
+
+\emph{Further reading: Inherent Unpredictability}~\cite{vazirani}.
+
+\section{Connection to Machine Learning}
+
+When a problem seems hard, it may be useful to step back and question whether the limitation is coming from a lack of data, from a lack of training time, or from a breakdown in the assumptions the algorithm can make about the target and distribution.
+
+\emph{Further reading: PAC Verification of Statistical Algorithms}~\cite{verification}.
+
+\begin{thebibliography}{9}
+\bibitem{mit}
+MIT 6.S976 / 18.S996.
+\emph{Cryptography and Machine Learning: Foundations and Frontiers}.
+\href{https://mlcrypto.mit.edu/course/slides/lec5.pdf#page=47}
+{Lecture 5, PRFs and learning hardness}, Spring 2026.
+
+\bibitem{circuits}
+An{\i}l Ada, with notes by Keming Meng and Evan Ning.
+\emph{Boolean Circuits 2}. CS455, Fall 2026.
+
+\bibitem{valiant}
+Michael Kearns and Leslie Valiant.
+\emph{Cryptographic Limitations on Learning Boolean Formulae and
+Finite Automata}. Journal of the ACM, 41(1), 67--95, 1994.
+\href{https://www.cis.upenn.edu/~mkearns/papers/cryptojacm.pdf}
+{Paper}.
+
+\bibitem{vazirani}
+Michael J. Kearns and Umesh V. Vazirani.
+\emph{An Introduction to Computational Learning Theory}.
+MIT Press, 1994. Chapter 6, ``Inherent Unpredictability.''
+
+\bibitem{verification}
+Saachi Mutreja and Jonathan Shafer.
+\emph{PAC Verification of Statistical Algorithms}.
+Conference on Learning Theory, 2023.
+\href{https://proceedings.mlr.press/v195/mutreja23a.html}{Paper}.
+\end{thebibliography}
+
+\end{document}

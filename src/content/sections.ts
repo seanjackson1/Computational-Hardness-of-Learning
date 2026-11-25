@@ -1,59 +1,29 @@
-export type SectionMeta = {
-  id: string
-  number: string
-  shortTitle: string
-  title: string
-  description: string
-}
+import { parseLatexPage } from './latex'
 
-export const sections: SectionMeta[] = [
-  {
-    id: 'introduction',
-    number: '01',
-    shortTitle: 'Introduction',
-    title: 'Introduction & Motivation',
-    description: 'This page will introduce the project and its central distinction between the amount of data needed for learning and the computation needed to learn efficiently.',
-  },
-  {
-    id: 'pac-learning',
-    number: '02',
-    shortTitle: 'PAC Learning',
-    title: 'Foundations of PAC Learning',
-    description: 'This page will define the PAC learning framework and introduce the notation used throughout the project.',
-  },
-  {
-    id: 'sample-complexity',
-    number: '03',
-    shortTitle: 'Sample Complexity',
-    title: 'Sample Complexity vs. Computational Complexity',
-    description: 'This page will outline the finite-class sample bound and contrast sample complexity with computational complexity.',
-  },
-  {
-    id: 'pseudorandom-functions',
-    number: '04',
-    shortTitle: 'PRFs',
-    title: 'Pseudorandom Functions',
-    description: 'This page will define pseudorandom functions and introduce the oracle distinguishing experiment.',
-  },
-  {
-    id: 'prf-hardness',
-    number: '05',
-    shortTitle: 'Main Theorem',
-    title: 'Main Theorem: Hardness of Learning PRFs',
-    description: 'This page will state the conditional hardness theorem and organize the reduction from an efficient learner to a PRF distinguisher.',
-  },
-  {
-    id: 'interactive-demos',
-    number: '06',
-    shortTitle: 'Demonstrations',
-    title: 'Interactive Demonstrations',
-    description: 'This page will eventually contain the project’s browser-based learning and pseudorandom-function demonstrations.',
-  },
-  {
-    id: 'implications',
-    number: '07',
-    shortTitle: 'Further Reading',
-    title: 'Implications & Further Reading',
-    description: 'This page will collect the project’s implications, limitations, references, and suggestions for further reading.',
-  },
-]
+const sources = import.meta.glob<string>('../../PAGE_SOURCES/page*_mine.tex', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+})
+
+// Keep the existing URL slugs. Titles and all article content come from LaTeX.
+export const sections = [
+  { id: 'introduction', shortTitle: 'Introduction' },
+  { id: 'pac-learning', shortTitle: 'PAC Learning' },
+  { id: 'sample-complexity', shortTitle: 'Sample Complexity' },
+  { id: 'pseudorandom-functions', shortTitle: 'PRFs' },
+  { id: 'prf-hardness', shortTitle: 'Main Theorem' },
+  { id: 'interactive-demos', shortTitle: 'Demonstrations' },
+  { id: 'implications', shortTitle: 'Further Reading' },
+].map((section, index) => {
+  const filename = `../../PAGE_SOURCES/page${index + 1}_mine.tex`
+  const source = sources[filename]
+  if (source === undefined) throw new Error(`Missing page source: ${filename}`)
+  return { ...section, ...parseLatexPage(source), number: String(index + 1).padStart(2, '0') }
+})
+
+export type Section = typeof sections[number]
+
+export function pageHref(page: string, anchor?: string) {
+  return `#/${page}${anchor ? `/${anchor}` : ''}`
+}

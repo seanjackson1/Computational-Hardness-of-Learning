@@ -1,0 +1,86 @@
+\documentclass[11pt,fleqn]{article}
+\usepackage{amsmath,amssymb}
+\usepackage[hidelinks]{hyperref}
+\usepackage[margin=0.8in]{geometry}
+
+\begin{document}
+\raggedright
+\setlength{\parskip}{0.6em}
+
+{\LARGE\bfseries Page 1: Introduction and Motivation\par}
+\medskip
+
+\section{Learning From Examples}
+
+In our context of learning, we are looking at algorithms that are trying to figure out rules that map inputs to labels. We will generally be looking at rules that have form $f: \{0,1\}^n \to \{0, 1\}$. So, in this case our inputs are $n$-bit strings and our outputs are binary 0 or 1 labels.
+
+Usually, we will be given examples of the rule and will try to generalize and figure out what the true rule is, or get as accurate of an approximation of the rule as possible.
+
+For instance, maybe we are given two examples of a rule that takes in 2-bit inputs:
+\[
+\begin{array}{c|c}
+\text{Input} & \text{Label} \\
+\hline
+00 & 0 \\
+11 & 1
+\end{array}
+\]
+
+One reasonable guess is that the true rule is guessing the first bit ($h_1(x_1, x_2) = x_1$). Another reasonable guess is that the rule outputs the second bit ($h_2(x_1, x_2) = x_2$).
+
+Both of the rules $h_1$ and $h_2$ are right on all the examples (as we'll later learn, this means they are both \textit{consistent} with the sample). However, the rules differ on inputs $01$ and $10$. From the examples we were given, it is unclear what label the true rule would assign to those inputs.
+
+This setup was a small example of supervised binary classification. We call the unknown true rule the \textit{target function}, and we call a rule proposed by a learner a \textit{hypothesis}. Our goal in learning is to have good \textit{generalization}, which means good performance on fresh new inputs drawn from some input distribution. We will see later that even if on the \textit{training examples} we achieve zero error, we can still have error on fresh inputs~\cite{kearns,mit-ml}.
+
+\section{Data and Time Resources}
+
+There are three major questions to keep in the back of our minds as we consider learning scenarios.
+
+\begin{itemize}
+    \item How many examples would we need in order to figure out an accurate rule?
+    \item How much computation would it take to find one?
+    \item How much computation would it take to evaluate the rule on fresh new inputs after training?
+\end{itemize}
+
+An example to keep in mind as we move forward is the short key scenario. Imagine that there is an $n$-bit key, and we select a rule from a family based on this key. If we know what the key is, then evaluating the rule is efficient. Given a set of examples, one way to figure out the rule might be to try all of the $2^n$ possible keys and see if the rule they give is consistent with the training examples. However, this means that it could take exponential to find figure out our proposed rule.
+
+\section{Situating in the Context of UCT}
+
+As we explore PAC learning and PRFs, themes that are relevant to UCT are efficient polynomial-time computability, randomized algorithms, and reductions.
+
+Another connection to UCT is that PRFs are inherently related to PRGs. It is unknown whether either exists, but there are interesting theoretical consequences if they do.
+
+The main reduction we will be showing in this website relates to \textit{Pseudorandom Functions} (PRFs). A PRF is easy to evaluate when given its key; however, to a third-party observer (\textit{distinguisher)} who can choose examples to to be labeled by the PRF, this observer should have a neglible advantage in telling whether the labels are coming from a PRF or a truly random function. The reduction shows the following:
+\[\text{efficient learner for the PRF family} \implies \text{efficient distinguisher with non-negligible advantage}\]
+Since a property of the PRF family is that we cannot have a efficient distinguisher with non-negligible advantage, this means that by the contrapositive statement we cannot have a efficient learner for the PRF family~\cite{mit-prf}.
+
+\section{Roadmap}
+
+\begin{itemize}
+    \item Pages 2-3: PAC model
+    \item Pages 4-5: define PRF security and learner-distinguisher reduction
+    \item Page 6: interactive examples of PAC and efficient learning
+    \item Page 7: Further implications
+\end{itemize}
+
+\begin{thebibliography}{9}
+
+\bibitem{kearns}
+Michael J. Kearns and Umesh V. Vazirani.
+\emph{An Introduction to Computational Learning Theory}.
+MIT Press, 1994. Chapter 1.
+
+\bibitem{mit-ml}
+MIT 6.S976 / 18.S996.
+\emph{Cryptography and Machine Learning: Foundations and Frontiers}.
+\href{https://mlcrypto.mit.edu/course/}{Lecture 2}, Spring 2026.
+
+\bibitem{mit-prf}
+MIT 6.S976 / 18.S996.
+\emph{Cryptography and Machine Learning: Foundations and Frontiers}.
+\href{https://mlcrypto.mit.edu/course/slides/lec5.pdf}{Lecture 5},
+Spring 2026.
+
+\end{thebibliography}
+
+\end{document}

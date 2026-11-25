@@ -1,0 +1,83 @@
+\documentclass[11pt,fleqn]{article}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[hidelinks]{hyperref}
+\setlength{\mathindent}{0pt}
+
+\newcommand{\X}{\mathcal X}
+\newcommand{\C}{\mathcal C}
+\newcommand{\Hy}{\mathcal H}
+\newcommand{\err}{\operatorname{error}}
+\newcommand{\eps}{\epsilon}
+\newcommand{\Adv}{\operatorname{Adv}}
+
+\begin{document}
+\raggedright
+\setlength{\parskip}{0.6em}
+
+{\LARGE\bfseries Page 4: Pseudorandom Functions\par}
+\medskip
+
+\section{A Key Selects a Function}
+
+Consider a family of functions
+\[F_k : \{0, 1\}^n \to \{0, 1\}, \quad k \in \{0, 1\}^n\]
+
+We will say that there is some public evaluation algorithm that takes a key $k$ and an input $x$ and computes $F_k(x)$ in polynomial time. Thus, once we fix a key, we have a fixed function from $\{0, 1\}^n \to \{0, 1\}$. The same input will always give the same output.
+
+A \textbf{Pseudorandom Function} (PRF) family has an additional important property. An efficient observer who can query the function using whatever examples they'd like will have little ability to tell the PRF apart from a random function. In UCT, we saw that a pseudorandom generator can produce a random-looking string given a short seed. Here, a short key will specify a random-looking function~\cite{ggm,mit}.
+
+\section{What is a Random Function?}
+
+A truly random function can be thought of as a truth table where, for each possible input, we flip a fair coin and that is the label for that input. Note that this is predetermined; once we start querying, if an observer queries the same input twice it will always give the same output.
+
+Note that we do not need to flip all the coins beforehand to simulate this, we could also do \textit{lazy sampling}. This means that, the first time we receive an input, we flip a coin and return its answer. If we ever see an input we have already seen, we can just return the output we gave before. This is more efficient than filling up an entire table beforehand.
+
+\section{The Security Experiment}
+
+Let there be some algorithm $A$ that has access to an oracle function $O$; this means that $A$ can submit queries to $O$ and receive its output. We will call the algorithm $A$ making queries the \textbf{distinguisher}. We will let $A$ has access to random bits, and $A$ is also allowed to make adaptive queries, meaning it can change its strategy based on what it sees from $O$.
+
+We will run the distinguisher $A$ in two different worlds.
+
+\begin{itemize}
+    \item In the \textit{keyed world}, we draw a uniform key $k$ once and then let $O = F_k$.
+    \item In the \textit{random world}, we draw a uniform random function $R$ and let $O = R$.
+\end{itemize}
+
+At the end of the algorithm, $A$ will output one bit. If $A$ outputs 1, this means it thinks it is in the keyed world. If it outputs 0, it thinks it is in the random world. Let $A^O(1^n)$ be the output of $A$ using oracle $O$ in a world with $n$-bit inputs ($n$ is often called the \textit{security parameter}, and note that $1^n$ is a string of $n$ ones). Then, we will define the \textbf{distinguishing advantage} as
+\[\boxed{\Adv_A(n) = |\Pr[A^{F_k}(1^n) = 1] - \Pr[A^{R}(1^n) = 1]|}\]
+Note that the first probability is over the choice of $k$ and the random choices of $A$. The second probability is over the choice of $R$ and the random choices of $A$~\cite{stanford}.\par
+
+To give a small example, suppose for each function in a keyed family, the function returns the first bit of its key. Thus, a single answer should look truly random when the key is drawn uniformly. However, if we query two distinct inputs, the answers will always agree in the keyed world, whereas in the random world there is a $1/2$ chance they disagree. Thus, if our algorithm $A$ outputs $1$ if the two distinct inputs have agreeing output and outputs $0$ otherwise, the advantage of $A$ will be $\Adv_A = 1 - \frac{1}{2} = 1/2$.
+
+\section{Negligible Advantage}
+
+A function $g$ is \textbf{negligible} if for every constant $c > 0$, we have $g(n) = o(1/n^c)$. That is to say, the function eventually becomes smaller than $1/n^c$. For example, $2^{-n}$ is negligible, but a constant $1 / 2$ is not because for $c \geq 1$ we have $1 / 2 \geq 1/n^c$ for $n \geq 2$.\par
+
+A \textbf{secure PRF family} requires that the advantage of every probabilistic polynomial-time distinguisher is negligible~\cite{mit}.
+
+\section{Computational and Statistical Indistinguishability}
+
+With $n$-bit keys, there can be at most $2^n$ unique truth tables produced by the keys. However, there are $2^{2^n}$ possible truth tables in total (each of the $2^n$ inputs could have label 0 or 1). Thus, an observer with unbounded resources could read the entire truth table and then check whether some key produces it. That test would accept with probability 1 in the keyed world and probability at most $2^n / 2^{2^n}$ in the random world.
+
+We would say that these distributions are statistically far apart, or not \textit{statistically indistinguishable}. However, they could still be \textit{computationally indistinguishable} to an efficient observer with limited time and query resources.
+
+\begin{thebibliography}{9}
+\bibitem{ggm}
+Oded Goldreich, Shafi Goldwasser, and Silvio Micali.
+\emph{How to Construct Random Functions}.
+Journal of the ACM, 33(4), 1986.
+\href{https://doi.org/10.1145/6490.6503}{DOI}.
+
+\bibitem{stanford}
+Ben Lynn. \emph{Pseudo-Random Functions}.
+\href{https://crypto.stanford.edu/pbc/notes/crypto/prf.html}
+{Stanford Cryptography Notes}.
+
+\bibitem{mit}
+MIT 6.S976 / 18.S996.
+\emph{Cryptography and Machine Learning: Foundations and Frontiers}.
+\href{https://mlcrypto.mit.edu/course/}{Lectures 4--5}, Spring 2026.
+\end{thebibliography}
+
+\end{document}

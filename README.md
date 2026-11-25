@@ -1,6 +1,6 @@
 # Computational Hardness of Learning
 
-A deliberately minimal seven-page outline for the current CS455 project milestone. Each page contains only its title, a short description of what will eventually go there, and a `To Be Filled In` placeholder.
+A seven-page CS455 project on sample complexity, PAC learning, and pseudorandom functions. The website reads the student-authored LaTeX in `PAGE_SOURCES/` directly.
 
 The pages use hash-based URLs (`#/introduction`, `#/pac-learning`, and so on), so they work when hosted from a GitHub Pages project subpath.
 
@@ -18,37 +18,16 @@ npm run test
 npm run build
 ```
 
-## Edit the outline
+## Edit the site
 
-- Page names and descriptions: `src/content/sections.ts`
+- Page titles, prose, equations, and references: `PAGE_SOURCES/page1_mine.tex` through `PAGE_SOURCES/page7_mine.tex`
+- Page URLs and navigation labels: `src/content/sections.ts`
+- LaTeX-to-website formatting: `src/content/latex.ts` and `src/components/ArticleContent.tsx`
 - Page layout: `src/App.tsx`
+- Sample bound, parity learner, and browser oracle challenge: `src/demos/`
 - Visual styling: `src/styles.css`
 
-## Return to the full interactive prototype
-
-The previous version is preserved on the GitHub branch:
-
-```text
-archive/full-interactive-prototype
-```
-
-To view its code without changing the current branch:
-
-```bash
-git show archive/full-interactive-prototype:src/App.tsx
-```
-
-To switch to it:
-
-```bash
-git switch archive/full-interactive-prototype
-```
-
-Return to the minimal version with:
-
-```bash
-git switch main
-```
+The LaTeX reader supports the markup used in the sources, including section headings, emphasis, lists, display and inline math, custom math commands, links, and bibliographies. The demos are placed in their corresponding sections in `PAGE_SOURCES/page6_mine.tex`. The parity demo sits after that section's first displayed equation. The demos use browser-local state. The oracle challenge needs Web Crypto in a secure context such as HTTPS or localhost.
 
 ## GitHub Pages
 

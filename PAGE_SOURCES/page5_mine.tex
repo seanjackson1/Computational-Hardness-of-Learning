@@ -1,0 +1,99 @@
+\documentclass[11pt,fleqn]{article}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[hidelinks]{hyperref}
+\setlength{\mathindent}{0pt}
+
+\newcommand{\X}{\mathcal X}
+\newcommand{\C}{\mathcal C}
+\newcommand{\Hy}{\mathcal H}
+\newcommand{\err}{\operatorname{error}}
+\newcommand{\eps}{\epsilon}
+\newcommand{\Adv}{\operatorname{Adv}}
+
+\begin{document}
+\raggedright
+\setlength{\parskip}{0.6em}
+
+{\LARGE\bfseries Page 5: Main Theorem: Hardness of Learning PRFs\par}
+\medskip
+
+\section{Theorem}
+
+Let $\{F_k : \{0, 1\}^n \to \{0, 1\}\}_{k\in\{0,1\}^n}$ be a secure PRF family~\cite{ggm}. Then, \textbf{no probabilistic polynomial-time learner can PAC-learn the family from i.i.d. uniform labeled examples and return an efficiently evaluable hypothesis}~\cite{mit}. The outputted function can be in any form that supports efficient evaluation (for example a boolean circuit or decision tree).
+
+We prove the statement by assuming for the sake of contradiction such a learner exists and then using it create a distinguisher with non-negligible advantage. Thus, this is essentially a hardness reduction like in UCT.
+
+\section{Proof}
+
+Assume for the sake of contradiction that there is some probabilistic polynomial-time learner that can PAC-learn $\{F_k : \{0, 1\}^n \to \{0, 1\}\}_{k\in\{0,1\}^n}$.
+
+Fix $0 < \epsilon < 1$ and $0 < \delta < 1$ such that $(1- \delta)(1-\eps) > \frac{1}{2}$. Note that a PAC learner must work for all valid values of $\eps$ and $\delta$, so if our proof finds a contradiction for any valid values this is sufficient.
+
+Since our learner is polynomial-time, we know it uses at most $m = \text{poly}(n)$ examples. Moreover, for every target $F_k$, at least $1 - \delta$ of the training runs must produce a hypothesis with error at most $\eps$ under the uniform distribution.
+
+Let $A$ be the distinguisher we are constructing. We know $A$ gets access to an oracle $O$ that is either $F_k$ for some random $k$ or a random function $R$. Let $A$ perform the following steps:
+\begin{enumerate}
+    \item Independently draw uniform inputs $x_1, x_2, ..., x_m$. By querying $O$, create sample $S = ((x_1, O(x_1)), (x_2, O(x_2)), ..., (x_m, O(x_m)))$.
+    \item Let $h$ be the hypothesis we get by running our efficient PAC learner on the sample $S$.
+    \item Let $x_*$ be a new, independent, uniformly drawn test input. Compute $h(x_*)$ and then query $O$ to find $O(x_*)$.
+    \item Output 1 if $h(x_*) = O(x_*)$; otherwise, output 0.
+\end{enumerate}
+
+\textit{(Small technical note: if our learner only works on valid PRF data, we can have a fallback where if it trains or runs for longer than polynomial time or fails to output anything we have a dummy hypothesis we use. This preserves the polynomial time of $A$.)}
+
+\subsection*{Polynomial Time Justification}
+Note that $A$ is a polynomial time. Line 1 is polynomial time since $m = \text{poly}(n)$. Lines 2 and 3 are polynomial time by assumption. Line 4 is constant time.
+
+\subsection*{Correctness Analysis}
+
+Let $G$ be the event that we produce a hypothesis with error at most $\eps$, and let $M$ be the event that on line 4, our prediction equals our oracle.
+
+Assume we are in the \textit{keyed world}. Then, we know that $\Pr(G) \geq 1 - \delta$, and we also know that $\Pr(M \mid G) \geq 1 - \eps$. Thus, in this world,
+\[\Pr(M ) \geq \Pr(M \cap G) = \Pr(G) \cdot \Pr(M \mid G) \geq (1 - \delta) (1 - \eps)\]
+
+Now assume that we are in the \textit{random world}. If $x_*$ is an input that our PAC learner never saw before, then we know that no matter what $h(x_*)$ produces, there is a $1/2$ chance it equals $O(x_*)$. However, if $x_*$ was seen during training, there is a chance that our PAC learner could have memorized it. If it did this, then there will be a 100\% chance of matching on line 4. Thus, we will account for this in our bound. Note that there are at most $m$ training samples seen. Thus, in this world,
+\[\Pr(M ) \leq \left(1 - \frac{m}{2^n}\right) \cdot \frac{1}{2} + \frac{m}{2^n} \cdot 1 = \frac{1}{2} + \frac{m}{2^{n+1}}\]
+
+So, we know that
+\[
+\boxed{\begin{aligned}
+    \Pr(M \mid O = F_k) &\geq (1 - \delta) (1 - \eps), \\
+    \Pr(M \mid O = R) &\leq \frac{1}{2} + \frac{m}{2^{n+1}}
+\end{aligned}}.
+\]
+\subsection*{Advantage is Non-Negligible, Yielding Contradiction}
+
+Now, using the results from the our correctness analysis, we know that
+\begin{align*}
+    \Adv_A(n) &= |\Pr[A^{F_k}(1^n) = 1] - \Pr[A^{R}(1^n) = 1]|\\
+    &= |\Pr(M \mid O = F_k) - \Pr(M \mid O= R)|\\
+    &\geq (1 - \delta)(1 - \eps) -  \frac{1}{2} - \frac{m}{2^{n+1}} \\
+\end{align*}
+Note that since $m = \text{poly(n)}$, we know $\frac{m}{2^{n+1}} \to 0$ as $n \to \infty$. Thus, $\frac{m}{2^{n+1}} < \frac{(1 - \delta)(1 - \eps) -  \frac{1}{2}}{2}$ eventually. Thus, for sufficiently large $n$, we know $\Adv_A(n) \geq \frac{(1 - \delta)(1 - \eps) -  \frac{1}{2}}{2}$. Since this is a constant, it is not negligible.
+
+\subsection{Conclusion}
+
+Since the advantage is not negligible, we have violated PRF security. Thus, we have proven through contradiction that there cannot exist an efficient learner.
+
+\emph{Further reading: Inherent Unpredictability}~\cite{kv}.
+
+\begin{thebibliography}{9}
+\bibitem{mit}
+MIT 6.S976 / 18.S996.
+\emph{Cryptography and Machine Learning: Foundations and Frontiers}.
+\href{https://mlcrypto.mit.edu/course/slides/lec5.pdf#page=47}
+{Lecture 5, PRFs and learning hardness}, Spring 2026.
+
+\bibitem{ggm}
+Oded Goldreich, Shafi Goldwasser, and Silvio Micali.
+\emph{How to Construct Random Functions}.
+Journal of the ACM, 33(4), 1986.
+
+\bibitem{kv}
+Michael J. Kearns and Umesh V. Vazirani.
+\emph{An Introduction to Computational Learning Theory}.
+MIT Press, 1994. Chapter 6, ``Inherent Unpredictability.''
+\end{thebibliography}
+
+\end{document}
