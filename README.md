@@ -20,14 +20,14 @@ npm run build
 
 ## Edit the site
 
-- Page titles, prose, equations, and references: `PAGE_SOURCES/page1_mine.tex` through `PAGE_SOURCES/page7_mine.tex`
+- Page titles, prose, equations, and references: `PAGE_SOURCES/page1.tex` through `PAGE_SOURCES/page7.tex`
 - Page URLs and navigation labels: `src/content/sections.ts`
 - LaTeX-to-website formatting: `src/content/latex.ts` and `src/components/ArticleContent.tsx`
 - Page layout: `src/App.tsx`
 - Sample bound, parity learner, and browser oracle challenge: `src/demos/`
 - Visual styling: `src/styles.css`
 
-The LaTeX reader supports the markup used in the sources, including section headings, emphasis, lists, display and inline math, custom math commands, links, and bibliographies. The demos are placed in their corresponding sections in `PAGE_SOURCES/page6_mine.tex`. The parity demo sits after that section's first displayed equation. The demos use browser-local state. The oracle challenge needs Web Crypto in a secure context such as HTTPS or localhost.
+The LaTeX reader supports the markup used in the sources, including section headings, emphasis, lists, display and inline math, custom math commands, links, and bibliographies. The demos are placed in their corresponding sections in `PAGE_SOURCES/page6.tex`. The parity demo sits after that section's first displayed equation. The demos use browser-local state. The oracle challenge needs Web Crypto in a secure context such as HTTPS or localhost.
 
 ## GitHub Pages
 
